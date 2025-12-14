@@ -1,56 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
-    //Animation
+    // Animation
     private SpriteRenderer spriteRenderer;
     public Sprite[] sprites;
-    int spriteIndex;
-    public float AnimationSpeed = 0.1f;
+    private int spriteIndex;
+    public float animationSpeed = 0.1f;
 
-    //Jump
-    public float jumpForce = 3f;
-    public float fallSpeed = -15f;
-    private Vector3 direction;
+    // Sounds
+    public AudioClip gameOverSound;
+    public AudioClip scoreSound;
 
-    public void Awake () {
-        spriteRenderer = GetComponent<SpriteRenderer> (); }
-
-    public void Start() {
-        InvokeRepeating(nameof(AnimateBird), AnimationSpeed, AnimationSpeed);
-    }
-
-    public void Update()
+    private void Awake()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            direction = Vector3.up * jumpForce;
-        }
-        direction.y += fallSpeed * Time.deltaTime;
-        transform.position += direction * Time.deltaTime;
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void AnimateBird() {
-        spriteIndex++;
-        if (spriteIndex >= sprites.Length) {
-            spriteIndex = 0;
+    private void Start()
+    {
+        if (sprites != null && sprites.Length > 0)
+        {
+            InvokeRepeating(nameof(AnimateBird), animationSpeed, animationSpeed);
         }
+    }
+
+    void AnimateBird()
+    {
+        if (sprites == null || sprites.Length == 0) return;
+
+        spriteIndex++;
+        if (spriteIndex >= sprites.Length)
+            spriteIndex = 0;
+
         spriteRenderer.sprite = sprites[spriteIndex];
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == "Obstacle") {
-            GameManager.instance.GameOver();
-        }
-        if (other.gameObject.tag == "Score") {
-            GameManager.instance.ScoreUp();
+        if (other.CompareTag("Obstacle"))
+        {
+            if (SoundManager.instance != null && gameOverSound != null)
+                SoundManager.instance.PlaySound(gameOverSound);
+
+            if (GameManager.instance != null)
+                GameManager.instance.GameOver();
         }
 
+        if (other.CompareTag("Score"))
+        {
+            if (GameManager.instance != null)
+                GameManager.instance.ScoreUp();
+
+            if (SoundManager.instance != null && scoreSound != null)
+                SoundManager.instance.PlaySound(scoreSound);
+        }
     }
-        
-            
 }
