@@ -73,7 +73,7 @@ git clone https://github.com/LakshyaBadjatya/FlappyBird.git
 
 ## 👤 Author
 
-**Lakshay Badjatya**
+**Lakshya Badjatya**
 
 ---
 
